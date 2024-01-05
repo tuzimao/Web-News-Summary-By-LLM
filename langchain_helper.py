@@ -2,6 +2,8 @@ from langchain.document_loaders import UnstructuredURLLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain.llms import openai
+from langchain.prompts import PromptTemplate
+
 
 from dotenv import load_dotenv
 
@@ -23,7 +25,17 @@ def url2News(url):
 
 llm = openai.OpenAI()
 
-chain = load_summarize_chain(llm,chain_type="map_reduce")
+prompt_template = """我将给你一段新闻概括 请把这段新闻精确的总结成中文 用5句话完成:
+
+
+"{text}"
+
+
+总结:"""
+
+prompt1 = PromptTemplate(template=prompt_template, input_variables=["text"])
+
+chain = load_summarize_chain(llm,prompt=prompt1,verbose=True)
 
 doc = url2News(url)
 
